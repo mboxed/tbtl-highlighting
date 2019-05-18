@@ -1,0 +1,192 @@
+#################################################################
+## Iro
+################################################################ 
+##
+## * Press Ctrl + '+'/'-' To Zoom in
+## * Press Ctrl + S to save and recalculate... 
+## * Documents are saved to web storage.
+## * Only one save slot supported.
+## * Matches cannot span lines.
+## * Unicode chars must be defined in \u0000 to \uffff format.
+## * All matches must be contained by a single group ( ... )
+## * Look behinds not permitted, (?<= or (?<!
+## * Look forwards are permitted (?= or (?!
+## * Constants are defined as __my_const = (......)
+## * The \= format allows unescaped regular expressions
+## * Constants referenced by match \= $${__my_const}
+## * Constants can reference other constants
+## * You are free to delete all the default scopes.
+## * Twitter : ainslec , Web: http://eeyo.io/iro
+##
+################################################################
+
+name                   = tbtl
+file_extensions []     = tbtl;
+
+
+################################################################
+## Styles
+################################################################
+
+styles [] {
+
+.comment : style {
+   color                 = light_green
+   italic                = true
+   ace_scope             = comment
+   textmate_scope        = comment
+   pygments_scope        = Comment
+}
+
+.keyword : style {
+   color     = cyan
+   ace_scope             = string.control
+   textmate_scope        = string.control
+   pygments_scope        = String.Char
+}
+
+.control : style {
+   color     = brown
+   ace_scope = keyword.control
+   textmate_scope = keyword.control
+   pygments_scope = Keyword.Constant
+}
+
+}
+
+#################################################
+## Parse contexts
+#################################################
+
+contexts [] {
+
+##############################################
+## Main Context - Entry point context
+##############################################
+
+main : context {
+
+   : include "keywords" ;
+   
+   : include "comments" ;
+   
+   : include "strings" ;
+   
+}
+
+#################################################
+## End of Contexts
+#################################################
+
+###########################################
+## Numeric Context
+###########################################
+
+
+comments : context {
+   : inline_push {
+      regex \= (;)
+      styles [] = .comment;
+      default_style = .comment
+      : pop {
+         regex \= ($)
+         styles [] = .comment;
+      }
+   }
+   
+   : inline_push {
+      regex \= (DATABASE)
+      styles [] = .comment;
+      default_style = .comment
+      : pop {
+         regex \= ($)
+         styles [] = .comment;
+      }
+   }
+   
+   : inline_push {
+      regex \= (`)
+      styles [] = .comment;
+      default_style = .comment
+      : pop {
+         regex \= ($)
+         styles [] = .comment;
+      }
+   }
+}
+
+keywords : context {
+   : pattern {
+      regex \= (\s:\s)
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= ( ! )
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (# )
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (- )
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (&)
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (@)
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (\*\ )
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (\?\ )
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (% )
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (\!)
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (\+)
+      styles []  = .keyword;
+   }
+   
+   : pattern {
+      regex \= (\-)
+      styles []  = .keyword;
+   }
+}
+
+
+strings : context {
+   : inline_push {
+      regex          \= (^[A-Z_]+\b.*)
+      styles []       = .control;
+      default_style   = .control
+      : pop {
+         regex       \= ()
+         styles []    = .control;
+      }
+   }
+}
+}
